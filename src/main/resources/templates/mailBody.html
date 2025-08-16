@@ -1,0 +1,28 @@
+<!doctype html>
+
+<html xmlns:th="http://www.thymeleaf.org" lang="es-ES">
+<head>
+    <meta charset="UTF-8">
+    <title>InfoDrop</title>
+</head>
+<body>
+    <h1>Your news portion</h1>
+
+    <div th:each="article : ${articles}">
+        <hr>
+        <div style="display:flex; justify-content: start">
+
+            <div>
+            <img  th:if="${article.urlToImage() != null}" th:src="@{${article.urlToImage}}" alt="Image" style="height: 170px">
+            <img  th:unless="${article.urlToImage() != null}" src="https://i.ibb.co/k2CCnf0C/substitute-photo.jpg" alt="Image" style="height: 170px">
+            </div>
+
+            <div style="padding:20px">
+            <h3><a th:href="@{${article.url}}" th:text="${article.title}" style="color:black"></a></h3>
+            <p th:text="${article.description}"></p>
+            </div>
+
+        </div>
+    </div>
+
+</body>
