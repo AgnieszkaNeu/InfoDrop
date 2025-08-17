@@ -43,7 +43,7 @@ public class GlobalExceptionController {
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<String> handleEmptyBody(HttpMessageNotReadableException ex) {
+    public ResponseEntity<String> handleEmptyBody() {
         return ResponseEntity
                 .badRequest()
                 .body("Empty or invalid request body");
