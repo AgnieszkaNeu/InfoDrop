@@ -3,6 +3,7 @@ package com.example.demo;
 import com.example.demo.mailConfig.CustomMailSender;
 import com.example.demo.news.Article;
 import com.example.demo.news.NewsFilter;
+import com.example.demo.payload.ApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +30,8 @@ public class ArticleController {
     }
 
     @GetMapping("/send")
-    public void send(Authentication authentication){
+    public ResponseEntity<ApiResponse> send(Authentication authentication){
         customMailSender.sendEmail(authentication.getName());
+        return ResponseEntity.ok().body(new ApiResponse("Newsletter sent to" + authentication.getName()));
     }
 }
