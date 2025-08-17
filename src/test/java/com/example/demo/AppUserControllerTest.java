@@ -5,6 +5,9 @@ import com.example.demo.User.AppUserDto;
 import com.example.demo.User.AppUserRepository;
 import com.example.demo.User.AppUserService;
 import com.example.demo.config.SecurityConfig;
+import com.example.demo.payload.CategoryRequest;
+import com.example.demo.payload.KeywordRequest;
+import com.example.demo.news.CategoryType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,17 +88,21 @@ public class AppUserControllerTest {
     @Test
     @WithMockUser
     void shouldAddKeyword() throws Exception {
-        mockMvc.perform(post("/keywords?keyword=key"))
+        KeywordRequest keywordDto = new KeywordRequest("keyword");
+
+        mockMvc.perform(post("/keywords")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(keywordDto)))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Keyword added: key"));
+                .andExpect(content().string("Keyword added: keyword"));
     }
 
     @Test
     @WithMockUser
     void shouldReturnBadRequestStatus_keyword() throws Exception {
-        mockMvc.perform(post("/keywords?keyword="))
+        mockMvc.perform(post("/keywords"))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string("Keyword must not be empty"));
+                .andExpect(content().string("Empty or invalid request body"));
     }
 
     @Test
@@ -103,7 +110,7 @@ public class AppUserControllerTest {
     void shouldRemoveKeyword() throws Exception {
         when(appUserService.removeKeyword(any(), any())).thenReturn(true);
 
-        mockMvc.perform(delete("/keywords?keyword=key"))
+        mockMvc.perform(delete("/keywords/keyword"))
                 .andExpect(status().isNoContent());
     }
 
@@ -112,20 +119,20 @@ public class AppUserControllerTest {
     void shouldRemoveNotFoundStatusWhenDeletingKeyword() throws Exception {
         when(appUserService.removeKeyword(any(), any())).thenReturn(false);
 
-        mockMvc.perform(delete("/keywords?keyword=key"))
+        mockMvc.perform(delete("/keywords/keyword"))
                 .andExpect(status().isNotFound())
-                .andExpect(content().string("No keyword found: key"));
+                .andExpect(content().string("No keyword found: keyword"));
     }
 
     @Test
     @WithMockUser
     void shouldReturnCategories() throws Exception {
-        Set<String> categories = Set.of("category 1", "category 2");
+        Set<String> categories = Set.of("general", "technology");
         when(appUserService.getCategories(any())).thenReturn(categories);
 
         mockMvc.perform(get("/categories"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasItems("category 1", "category 2")));
+                .andExpect(jsonPath("$", hasItems("general", "technology")));
     }
 
     @Test
@@ -137,17 +144,33 @@ public class AppUserControllerTest {
     @Test
     @WithMockUser
     void shouldAddCategory() throws Exception {
-        mockMvc.perform(post("/categories?category=cat"))
+        CategoryRequest categoryDto = new CategoryRequest(CategoryType.general);
+
+        mockMvc.perform(post("/categories")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(categoryDto)))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Category added: cat"));
+                .andExpect(content().string("Category added: general"));
     }
 
     @Test
     @WithMockUser
     void shouldReturnBadRequestStatus_category() throws Exception {
-        mockMvc.perform(post("/categories?category="))
+        mockMvc.perform(post("/categories"))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string("Category name must not be empty"));
+                .andExpect(content().string("Empty or invalid request body"));
+    }
+
+    @Test
+    @WithMockUser
+    void shouldReturnBadRequestStatus_InvalidCategory() throws Exception {
+        String category = "education";
+
+        mockMvc.perform(post("/categories")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(category)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Empty or invalid request body"));
     }
 
     @Test
@@ -155,7 +178,7 @@ public class AppUserControllerTest {
     void shouldRemoveCategory() throws Exception {
         when(appUserService.removeCategory(any(), any())).thenReturn(true);
 
-        mockMvc.perform(delete("/categories?category=cat"))
+        mockMvc.perform(delete("/categories/category"))
                 .andExpect(status().isNoContent());
     }
 
@@ -164,9 +187,9 @@ public class AppUserControllerTest {
     void shouldRemoveNotFoundStatusWhenDeletingCategory() throws Exception {
         when(appUserService.removeKeyword(any(), any())).thenReturn(false);
 
-        mockMvc.perform(delete("/categories?category=cat"))
+        mockMvc.perform(delete("/categories/category"))
                 .andExpect(status().isNotFound())
-                .andExpect(content().string("No category found: cat"));
+                .andExpect(content().string("No category found: category"));
     }
 
 }

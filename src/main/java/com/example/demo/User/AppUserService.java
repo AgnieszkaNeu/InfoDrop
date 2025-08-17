@@ -1,6 +1,8 @@
 package com.example.demo.User;
 
 import com.example.demo.config.PasswordEncoderConfig;
+import com.example.demo.payload.CategoryRequest;
+import com.example.demo.payload.KeywordRequest;
 import com.example.demo.exceptions.EmailAlreadyUsedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -33,9 +35,9 @@ public class AppUserService {
         return appUser.getKeywords();
     }
 
-    public void addKeyword(String keyword, Authentication authentication){
+    public void addKeyword(KeywordRequest keywordDto, Authentication authentication){
         AppUser appUser = getAppUserEntity(authentication);
-        appUser.getKeywords().add(keyword);
+        appUser.getKeywords().add(keywordDto.keyword());
         appUserRepository.save(appUser);
     }
 
@@ -54,9 +56,9 @@ public class AppUserService {
         return appUser.getCategories();
     }
 
-    public void addCategory(String category, Authentication authentication) {
+    public void addCategory(CategoryRequest categoryDto, Authentication authentication) {
         AppUser appUser = getAppUserEntity(authentication);
-        appUser.getCategories().add(category);
+        appUser.getCategories().add(categoryDto.category().name());
         appUserRepository.save(appUser);
     }
 

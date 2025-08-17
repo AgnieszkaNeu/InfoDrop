@@ -5,7 +5,10 @@ import com.example.demo.User.AppUserDto;
 import com.example.demo.User.AppUserRepository;
 import com.example.demo.User.AppUserService;
 import com.example.demo.config.PasswordEncoderConfig;
+import com.example.demo.payload.CategoryRequest;
+import com.example.demo.payload.KeywordRequest;
 import com.example.demo.exceptions.EmailAlreadyUsedException;
+import com.example.demo.news.CategoryType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -70,7 +73,7 @@ public class AppUserServiceTest {
 
     @Test
     void shouldReturnKeywords(){
-        Set<String> keywords = Set.of("keyword 1", "keyword 2");
+        Set<String> keywords = Set.of("AI", "bitcoin");
 
         AppUser mockUser = new AppUser();
         mockUser.setKeywords(keywords);
@@ -85,26 +88,27 @@ public class AppUserServiceTest {
 
     @Test
     void shouldAddKeywords(){
+        KeywordRequest keywordDto = new KeywordRequest("AI");
         AppUser mockUser = new AppUser();
 
         AppUserService spyService = spy(appUserService);
         doReturn(mockUser).when(spyService).getAppUserEntity(authentication);
 
-        spyService.addKeyword("key", authentication);
+        spyService.addKeyword(keywordDto, authentication);
 
         verify(appUserRepository, times(1)).save(argThat(user ->
-                user.getKeywords().contains("key")));
+                user.getKeywords().contains("AI")));
     }
 
     @Test
     void shouldRemoveKeyword(){
         AppUser mockUser = new AppUser();
-        mockUser.getKeywords().add("key");
+        mockUser.getKeywords().add("AI");
 
         AppUserService spyService = spy(appUserService);
         doReturn(mockUser).when(spyService).getAppUserEntity(authentication);
 
-        boolean removed = spyService.removeKeyword("key", authentication);
+        boolean removed = spyService.removeKeyword("AI", authentication);
 
         verify(appUserRepository, times(1)).save(argThat(user ->
                 user.getKeywords().isEmpty()));
@@ -118,7 +122,7 @@ public class AppUserServiceTest {
         AppUserService spyService = spy(appUserService);
         doReturn(mockUser).when(spyService).getAppUserEntity(authentication);
 
-        boolean removed = spyService.removeKeyword("key", authentication);
+        boolean removed = spyService.removeKeyword("AI", authentication);
 
         verify(appUserRepository, never()).save(any());
         assertFalse(removed);
@@ -126,7 +130,7 @@ public class AppUserServiceTest {
 
     @Test
     void shouldReturnCategories(){
-        Set<String> categories = Set.of("category 1", "category 2");
+        Set<String> categories = Set.of("general", "technology");
 
         AppUser mockUser = new AppUser();
         mockUser.setCategories(categories);
@@ -141,26 +145,27 @@ public class AppUserServiceTest {
 
     @Test
     void shouldAddCategory(){
+        CategoryRequest categoryDto = new CategoryRequest(CategoryType.general);
         AppUser mockUser = new AppUser();
 
         AppUserService spyService = spy(appUserService);
         doReturn(mockUser).when(spyService).getAppUserEntity(authentication);
 
-        spyService.addCategory("cat", authentication);
+        spyService.addCategory(categoryDto, authentication);
 
         verify(appUserRepository, times(1)).save(argThat(user ->
-                user.getCategories().contains("cat")));
+                user.getCategories().contains("general")));
     }
 
     @Test
     void shouldRemoveCategory(){
         AppUser mockUser = new AppUser();
-        mockUser.getCategories().add("cat");
+        mockUser.getCategories().add("general");
 
         AppUserService spyService = spy(appUserService);
         doReturn(mockUser).when(spyService).getAppUserEntity(authentication);
 
-        boolean removed = spyService.removeCategory("cat", authentication);
+        boolean removed = spyService.removeCategory("general", authentication);
 
         verify(appUserRepository, times(1)).save(argThat(user ->
                 user.getCategories().isEmpty()));
@@ -174,7 +179,7 @@ public class AppUserServiceTest {
         AppUserService spyService = spy(appUserService);
         doReturn(mockUser).when(spyService).getAppUserEntity(authentication);
 
-        boolean removed = spyService.removeCategory("cat", authentication);
+        boolean removed = spyService.removeCategory("general", authentication);
 
         verify(appUserRepository, never()).save(any());
         assertFalse(removed);

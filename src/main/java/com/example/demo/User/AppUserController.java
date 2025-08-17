@@ -1,7 +1,9 @@
 package com.example.demo.User;
 
+import com.example.demo.payload.ApiResponse;
+import com.example.demo.payload.CategoryRequest;
+import com.example.demo.payload.KeywordRequest;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -21,9 +23,9 @@ public class AppUserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody @Valid AppUserDto appUserDto){
+    public ResponseEntity<ApiResponse> registerUser(@RequestBody @Valid AppUserDto appUserDto){
         appUserService.saveNewUser(appUserDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body("User created");
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse("User created"));
     }
 
     @GetMapping("/keywords")
@@ -32,22 +34,18 @@ public class AppUserController {
     }
 
     @PostMapping("/keywords")
-    public ResponseEntity<String> addKeyword(@RequestParam
-                                             @NotBlank(message = "Keyword must not be empty") String keyword,
-                                             Authentication authentication){
-        appUserService.addKeyword(keyword,authentication);
-        return ResponseEntity.status(HttpStatus.OK).body("Keyword added: " + keyword);
+    public ResponseEntity<ApiResponse> addKeyword(@RequestBody KeywordRequest keywordDto, Authentication authentication){
+        appUserService.addKeyword(keywordDto,authentication);
+        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("Keyword added: " + keywordDto.keyword()));
     }
 
-    @DeleteMapping("/keywords")
-    public ResponseEntity<String> removeKeyword(@RequestParam
-                                                @NotBlank(message = "Keyword must not be empty")  String keyword,
-                                                Authentication authentication){
+    @DeleteMapping("/keywords/{keyword}")
+    public ResponseEntity<ApiResponse> removeKeyword(@PathVariable String keyword, Authentication authentication){
         boolean removed = appUserService.removeKeyword(keyword,authentication);
         if(removed){
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No keyword found: " + keyword);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse("No keyword found: " + keyword));
         }
     }
 
@@ -57,22 +55,18 @@ public class AppUserController {
     }
 
     @PostMapping("/categories")
-    public ResponseEntity<String> addCategory(@RequestParam
-                                              @NotBlank(message = "Category name must not be empty")  String category,
-                                              Authentication authentication){
-        appUserService.addCategory(category,authentication);
-        return ResponseEntity.status(HttpStatus.OK).body("Category added: " + category);
+    public ResponseEntity<ApiResponse> addCategory(@RequestBody CategoryRequest categoryDto, Authentication authentication){
+        appUserService.addCategory(categoryDto,authentication);
+        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("Category added: " + categoryDto.category()));
     }
 
-    @DeleteMapping("/categories")
-    public ResponseEntity<String> removeCategory(@RequestParam
-                                                 @NotBlank(message = "Category name must not be empty") String category,
-                                                 Authentication authentication){
-        boolean removed = appUserService.removeCategory(category,authentication);
+    @DeleteMapping("/categories/{category_name}")
+    public ResponseEntity<ApiResponse> removeCategory(@PathVariable String category_name, Authentication authentication){
+        boolean removed = appUserService.removeCategory(category_name,authentication);
         if(removed){
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No category found: " + category);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse("No category found: " + category_name));
         }
     }
 }
