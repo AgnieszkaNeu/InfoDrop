@@ -1,6 +1,6 @@
 package com.example.demo.news;
 
-import com.example.demo.external.newsapi.ArticleDto;
+import com.example.demo.payload.ArticleDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
