@@ -1,7 +1,7 @@
 package com.example.demo.news;
 
 import com.example.demo.User.AppUser;
-import com.example.demo.external.newsapi.ArticleDto;
+import com.example.demo.payload.ArticleDto;
 import com.example.demo.external.newsapi.NewsApiResponse;
 import com.example.demo.external.newsapi.NewsApiService;
 import org.springframework.stereotype.Service;

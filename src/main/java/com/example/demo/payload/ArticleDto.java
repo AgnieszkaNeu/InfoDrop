@@ -1,4 +1,4 @@
-package com.example.demo.external.newsapi;
+package com.example.demo.payload;
 
 public record ArticleDto(
         String author,
